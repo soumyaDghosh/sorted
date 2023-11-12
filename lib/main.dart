@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sorted/home_page.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 import 'package:yaru/yaru.dart';
 
 Future<void> main() async {
-  await YaruWindowTitleBar.ensureInitialized();
+  if (!(Platform.isAndroid)) {
+    await YaruWindowTitleBar.ensureInitialized();
+  }
   runApp(const MyApp());
 }
 
