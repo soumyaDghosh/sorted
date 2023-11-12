@@ -1,9 +1,9 @@
 class MergeSort {
-  List<int> numbers;
+  List<dynamic> numbers;
 
   MergeSort(this.numbers);
 
-  List<int> sort() {
+  List<dynamic> sort() {
     _mergeSort(0, numbers.length - 1);
     return numbers;
   }
@@ -25,8 +25,8 @@ class MergeSort {
     int n1 = mid - low + 1;
     int n2 = high - mid;
 
-    List<int> left = List<int>.filled(n1, 0);
-    List<int> right = List<int>.filled(n2, 0);
+    List<dynamic> left = List<dynamic>.filled(n1, 0);
+    List<dynamic> right = List<dynamic>.filled(n2, 0);
 
     // Copy data to temporary arrays left[] and right[]
     for (int i = 0; i < n1; i++) {
