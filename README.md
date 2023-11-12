@@ -1,16 +1,17 @@
 # sorted
 
-A new Flutter project.
+An app to test multiple sorting techniques written in Flutter
 
-## Getting Started
+## For first release
 
-This project is a starting point for a Flutter application.
+[x] Implement various sorting techniques
+[x] Show the time taken by an algorithm to calculate
+[x] Allow user to give the inputs
 
-A few resources to get you started if this is your first Flutter project:
+## For next release
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+[] Allow translation of the app
+[] Add some more algorithms
+[] Add about section
+[] Try to raise more user exceptions
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
