@@ -53,17 +53,13 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      appBar: kIsWeb
-          ? const YaruWindowTitleBar(
-              title: Text('Sorted'),
+      appBar: Platform.isAndroid
+          ? AppBar(
+              title: const Text('Sorted'),
             )
-          : Platform.isAndroid
-              ? AppBar(
-                  title: const Text('Sorted'),
-                )
-              : const YaruWindowTitleBar(
-                  title: Text('Sorted'),
-                ),
+          : const YaruWindowTitleBar(
+              title: Text('Sorted'),
+            ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -172,9 +168,9 @@ class _HomePageState extends State<HomePage> {
                               width: width - 50,
                             ),
                           );
+                          return;
                         }
-                        if (floatNumbers.isNotEmpty &&
-                            selectedAlgorithm == '') {
+                        if (selectedAlgorithm == '') {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
@@ -186,6 +182,7 @@ class _HomePageState extends State<HomePage> {
                               duration: const Duration(seconds: 5),
                             ),
                           );
+                          return;
                         }
                         if (selectedAlgorithm == 'Insertion') {
                           Stopwatch stopwatch = Stopwatch()..start();
@@ -218,13 +215,22 @@ class _HomePageState extends State<HomePage> {
                       },
                       style: ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).primaryColor),
+                          Theme.of(context).primaryColor,
+                        ),
                         shape: const MaterialStatePropertyAll<
                             RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(
-                              Radius.circular(40),
+                              Radius.circular(10),
                             ),
+                          ),
+                        ),
+                        padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
+                          EdgeInsets.only(
+                            top: 20,
+                            bottom: 20,
+                            left: width / 7,
+                            right: width / 7,
                           ),
                         ),
                       ),
