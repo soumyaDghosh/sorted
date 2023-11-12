@@ -1,4 +1,5 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sorted/constants.dart';
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController controller = TextEditingController();
   final FocusNode f1 = FocusNode();
   String _popupMenuTitle = 'Select Algorithm';
+  String selectedAlgorithm = '';
   String result = '';
   String time = '';
   List<dynamic> floatNumbers = [];
@@ -76,6 +78,8 @@ class _HomePageState extends State<HomePage> {
                           result = '';
                           time = '';
                           _popupMenuTitle = 'Select Algorithm';
+                          floatNumbers = [];
+                          time = '';
                         });
                       },
                     ),
@@ -115,7 +119,8 @@ class _HomePageState extends State<HomePage> {
                                 style: TextStyle(
                                     fontSize: width < 600 ? 15 : fontSize - 5),
                               ),
-                              onTap: () => _popupMenuTitle = algorithms[index],
+                              onTap: () =>
+                                  selectedAlgorithm = algorithms[index],
                             );
                           });
                         },
@@ -131,6 +136,14 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         String t1 = controller.text;
                         try {
+                          if (t1.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Dataset is empty'),
+                              ),
+                            );
+                            return;
+                          }
                           listNumbers =
                               t1.split(',').map((s) => s.trim()).toList();
                           floatNumbers = listNumbers
@@ -148,51 +161,48 @@ class _HomePageState extends State<HomePage> {
                               width: width - 50,
                             ),
                           );
-                        } finally {
-                          if (floatNumbers.isNotEmpty &&
-                              _popupMenuTitle == '') {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Select an Algorithm',
-                                  style: TextStyle(fontSize: fontSize),
-                                ),
-                                showCloseIcon: true,
-                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                        }
+                        if (floatNumbers.isNotEmpty &&
+                            selectedAlgorithm == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Select an Algorithm',
+                                style: TextStyle(fontSize: fontSize),
                               ),
-                            );
-                          }
-                          if (_popupMenuTitle == 'Insertion') {
-                            Stopwatch stopwatch = Stopwatch()..start();
-                            InsertionSort insertionSort =
-                                InsertionSort(floatNumbers);
-                            setState(() {
-                              result = insertionSort.sort().toString();
-                              time =
-                                  'Time taken ${stopwatch.elapsed.toString()}';
-                            });
-                            stopwatch.stop();
-                          }
-                          if (_popupMenuTitle == 'Bubble') {
-                            Stopwatch stopwatch = Stopwatch()..start();
-                            BubbleSort bubbleSort = BubbleSort(floatNumbers);
-                            setState(() {
-                              result = bubbleSort.sort().toString();
-                              time =
-                                  'Time taken ${stopwatch.elapsed.toString()}';
-                            });
-                            stopwatch.stop();
-                          }
-                          if (_popupMenuTitle == 'Merge') {
-                            Stopwatch stopwatch = Stopwatch()..start();
-                            MergeSort mergeSort = MergeSort(floatNumbers);
-                            setState(() {
-                              result = mergeSort.sort().toString();
-                              time =
-                                  'Time taken ${stopwatch.elapsed.toString()}';
-                            });
-                            stopwatch.stop();
-                          }
+                              showCloseIcon: true,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              duration: const Duration(seconds: 5),
+                            ),
+                          );
+                        }
+                        if (selectedAlgorithm == 'Insertion') {
+                          Stopwatch stopwatch = Stopwatch()..start();
+                          InsertionSort insertionSort =
+                              InsertionSort(floatNumbers);
+                          setState(() {
+                            result = insertionSort.sort().toString();
+                            time = 'Time taken ${stopwatch.elapsed.toString()}';
+                          });
+                          stopwatch.stop();
+                        }
+                        if (selectedAlgorithm == 'Bubble') {
+                          Stopwatch stopwatch = Stopwatch()..start();
+                          BubbleSort bubbleSort = BubbleSort(floatNumbers);
+                          setState(() {
+                            result = bubbleSort.sort().toString();
+                            time = 'Time taken ${stopwatch.elapsed.toString()}';
+                          });
+                          stopwatch.stop();
+                        }
+                        if (selectedAlgorithm == 'Merge') {
+                          Stopwatch stopwatch = Stopwatch()..start();
+                          MergeSort mergeSort = MergeSort(floatNumbers);
+                          setState(() {
+                            result = mergeSort.sort().toString();
+                            time = 'Time taken ${stopwatch.elapsed.toString()}';
+                          });
+                          stopwatch.stop();
                         }
                       },
                       style: ButtonStyle(
@@ -229,11 +239,27 @@ class _HomePageState extends State<HomePage> {
                         child: Stack(
                           children: [
                             YaruBanner(
-                              child: SingleChildScrollView(
-                                child: Text(
-                                  '$result\n\n$time\n$width\t$fontSize',
-                                  style: TextStyle(fontSize: fontSize),
-                                ),
+                              child: Column(
+                                children: [
+                                  Flexible(
+                                    child: SingleChildScrollView(
+                                      child: SelectableText(
+                                        result,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: SelectionArea(
+                                      child: SelectableText(
+                                        time,
+                                        style: TextStyle(
+                                          fontSize: fontSize,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             Positioned(
