@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           _popupMenuTitle,
                           style: TextStyle(
-                            fontSize: fontSize - 2,
+                            fontSize: width < 600 ? 13 : fontSize - 5,
                           ),
                         ),
                         itemBuilder: (BuildContext context) {
@@ -112,7 +112,8 @@ class _HomePageState extends State<HomePage> {
                               value: algorithms[index],
                               child: Text(
                                 algorithms[index],
-                                style: TextStyle(fontSize: fontSize - 2),
+                                style: TextStyle(
+                                    fontSize: width < 600 ? 15 : fontSize - 5),
                               ),
                               onTap: () => _popupMenuTitle = algorithms[index],
                             );
@@ -206,11 +207,14 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      child: Text(
-                        'Calculate',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSize,
+                      child: Tooltip(
+                        message: 'click to sort',
+                        child: Text(
+                          'Sort',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: fontSize,
+                          ),
                         ),
                       ),
                     ),
@@ -225,9 +229,11 @@ class _HomePageState extends State<HomePage> {
                         child: Stack(
                           children: [
                             YaruBanner(
-                              child: Text(
-                                '$result\n\n$time',
-                                style: TextStyle(fontSize: fontSize),
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  '$result\n\n$time\n$width\t$fontSize',
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
                               ),
                             ),
                             Positioned(
