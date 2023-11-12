@@ -32,6 +32,17 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width.toInt();
     final height = MediaQuery.of(context).size.height.toInt();
+    final double fontSize;
+    if (width >= 1100) {
+      fontSize = 24;
+    } else if (width >= 800 && width < 1100) {
+      fontSize = 22;
+    } else if (width >= 600 && width < 800) {
+      fontSize = 18;
+    } else {
+      fontSize = 15;
+    }
+
     return Scaffold(
       appBar: const YaruWindowTitleBar(),
       body: Center(
@@ -81,12 +92,20 @@ class _HomePageState extends State<HomePage> {
                     child: YaruPopupMenuButton(
                       tooltip: 'Select the Algorithm',
                       enableFeedback: true,
-                      child: Text(_popupMenuTitle),
+                      child: Text(
+                        _popupMenuTitle,
+                        style: TextStyle(
+                          fontSize: fontSize,
+                        ),
+                      ),
                       itemBuilder: (BuildContext context) {
                         return List.generate(algorithms.length, (index) {
                           return PopupMenuItem<String>(
                             value: algorithms[index],
-                            child: Text(algorithms[index]),
+                            child: Text(
+                              algorithms[index],
+                              style: TextStyle(fontSize: fontSize),
+                            ),
                             onTap: () => selectedAlgorithm = algorithms[index],
                           );
                         });
@@ -112,47 +131,54 @@ class _HomePageState extends State<HomePage> {
                           SnackBar(
                             content: Text(
                               e.toString(),
+                              style: TextStyle(fontSize: fontSize),
                             ),
                             behavior: SnackBarBehavior.floating,
                             showCloseIcon: true,
+                            width: width - 50,
                           ),
                         );
-                      }
-                      if (selectedAlgorithm == '') {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Select an Algorithm'),
-                            showCloseIcon: true,
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                          ),
-                        );
-                      }
-                      if (selectedAlgorithm == 'Insertion') {
-                        Stopwatch stopwatch = Stopwatch()..start();
-                        InsertionSort insertionSort = InsertionSort(intNumbers);
-                        setState(() {
-                          result = insertionSort.sort().toString();
-                          time = stopwatch.elapsed;
-                        });
-                        stopwatch.stop();
-                      }
-                      if (selectedAlgorithm == 'Bubble') {
-                        Stopwatch stopwatch = Stopwatch()..start();
-                        BubbleSort bubbleSort = BubbleSort(intNumbers);
-                        setState(() {
-                          result = bubbleSort.sort().toString();
-                          time = stopwatch.elapsed;
-                        });
-                        stopwatch.stop();
-                      }
-                      if (selectedAlgorithm == 'Merge') {
-                        Stopwatch stopwatch = Stopwatch()..start();
-                        MergeSort mergeSort = MergeSort(intNumbers);
-                        setState(() {
-                          result = mergeSort.sort().toString();
-                          time = stopwatch.elapsed;
-                        });
-                        stopwatch.stop();
+                      } finally {
+                        if (selectedAlgorithm == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Select an Algorithm',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                              showCloseIcon: true,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                            ),
+                          );
+                        }
+                        if (selectedAlgorithm == 'Insertion') {
+                          Stopwatch stopwatch = Stopwatch()..start();
+                          InsertionSort insertionSort =
+                              InsertionSort(intNumbers);
+                          setState(() {
+                            result = insertionSort.sort().toString();
+                            time = stopwatch.elapsed;
+                          });
+                          stopwatch.stop();
+                        }
+                        if (selectedAlgorithm == 'Bubble') {
+                          Stopwatch stopwatch = Stopwatch()..start();
+                          BubbleSort bubbleSort = BubbleSort(intNumbers);
+                          setState(() {
+                            result = bubbleSort.sort().toString();
+                            time = stopwatch.elapsed;
+                          });
+                          stopwatch.stop();
+                        }
+                        if (selectedAlgorithm == 'Merge') {
+                          Stopwatch stopwatch = Stopwatch()..start();
+                          MergeSort mergeSort = MergeSort(intNumbers);
+                          setState(() {
+                            result = mergeSort.sort().toString();
+                            time = stopwatch.elapsed;
+                          });
+                          stopwatch.stop();
+                        }
                       }
                     },
                     style: ButtonStyle(
@@ -164,20 +190,24 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.all(Radius.circular(25)),
                           ),
                         )),
-                    child: const Text(
+                    child: Text(
                       'Calculate',
                       style: TextStyle(
                         color: Colors.white,
+                        fontSize: fontSize,
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(10),
                     child: SizedBox(
                       height: height - 300,
                       width: width - 50,
                       child: YaruBanner(
-                        child: Text('$result\n\nTime Taken: $time'),
+                        child: Text(
+                          '$result\n\nTime Taken: $time \n\n$width $height',
+                          style: TextStyle(fontSize: fontSize),
+                        ),
                         onTap: () async {
                           await Clipboard.setData(
                               ClipboardData(text: result.toString()));
