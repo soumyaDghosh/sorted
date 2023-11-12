@@ -1,10 +1,9 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sorted/common/widgets/about_tile.dart';
 import 'package:sorted/constants.dart';
 import 'package:sorted/models/bubble_sort.dart';
 import 'package:sorted/models/insertion_sort.dart';
@@ -54,12 +53,16 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      appBar: Platform.isAndroid
+      appBar: Platform.isAndroid || Platform.isIOS
           ? AppBar(
               title: const Text('Sorted'),
+              actions: [
+                aboutSection(context, width),
+              ],
             )
-          : const YaruWindowTitleBar(
-              title: Text('Sorted'),
+          : YaruWindowTitleBar(
+              title: const Text('Sorted'),
+              leading: aboutSection(context, width),
             ),
       body: Center(
         child: SingleChildScrollView(
