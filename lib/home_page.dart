@@ -147,6 +147,8 @@ class _HomePageState extends State<HomePage> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Dataset is empty'),
+                                showCloseIcon: true,
+                                duration: Duration(seconds: 5),
                               ),
                             );
                             return;
