@@ -1,5 +1,4 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sorted/constants.dart';
@@ -20,11 +19,18 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController controller = TextEditingController();
   final FocusNode f1 = FocusNode();
   String _popupMenuTitle = 'Select Algorithm';
-  String selectedAlgorithm = '';
   String result = '';
-  Duration? time;
-  List<int> intNumbers = [];
+  String time = '';
+  List<dynamic> floatNumbers = [];
   List<String> listNumbers = [];
+  bool isSnackbar = false;
+
+  @override
+  void dispose() {
+    controller.dispose();
+    f1.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +69,13 @@ class _HomePageState extends State<HomePage> {
                   decoration: InputDecoration(
                     suffixIcon: YaruIconButton(
                       icon: const Icon(YaruIcons.edit_clear),
+                      tooltip: 'Clear',
                       onPressed: () {
                         setState(() {
                           controller.clear();
+                          result = '';
+                          time = '';
+                          _popupMenuTitle = 'Select Algorithm';
                         });
                       },
                     ),
@@ -104,8 +114,7 @@ class _HomePageState extends State<HomePage> {
                                 algorithms[index],
                                 style: TextStyle(fontSize: fontSize - 2),
                               ),
-                              onTap: () =>
-                                  selectedAlgorithm = algorithms[index],
+                              onTap: () => _popupMenuTitle = algorithms[index],
                             );
                           });
                         },
@@ -123,8 +132,9 @@ class _HomePageState extends State<HomePage> {
                         try {
                           listNumbers =
                               t1.split(',').map((s) => s.trim()).toList();
-                          intNumbers =
-                              listNumbers.map((s) => int.parse(s)).toList();
+                          floatNumbers = listNumbers
+                              .map((s) => int.tryParse(s) ?? double.parse(s))
+                              .toList();
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -138,7 +148,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         } finally {
-                          if (selectedAlgorithm == '') {
+                          if (floatNumbers.isNotEmpty &&
+                              _popupMenuTitle == '') {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -150,31 +161,34 @@ class _HomePageState extends State<HomePage> {
                               ),
                             );
                           }
-                          if (selectedAlgorithm == 'Insertion') {
+                          if (_popupMenuTitle == 'Insertion') {
                             Stopwatch stopwatch = Stopwatch()..start();
                             InsertionSort insertionSort =
-                                InsertionSort(intNumbers);
+                                InsertionSort(floatNumbers);
                             setState(() {
                               result = insertionSort.sort().toString();
-                              time = stopwatch.elapsed;
+                              time =
+                                  'Time taken ${stopwatch.elapsed.toString()}';
                             });
                             stopwatch.stop();
                           }
-                          if (selectedAlgorithm == 'Bubble') {
+                          if (_popupMenuTitle == 'Bubble') {
                             Stopwatch stopwatch = Stopwatch()..start();
-                            BubbleSort bubbleSort = BubbleSort(intNumbers);
+                            BubbleSort bubbleSort = BubbleSort(floatNumbers);
                             setState(() {
                               result = bubbleSort.sort().toString();
-                              time = stopwatch.elapsed;
+                              time =
+                                  'Time taken ${stopwatch.elapsed.toString()}';
                             });
                             stopwatch.stop();
                           }
-                          if (selectedAlgorithm == 'Merge') {
+                          if (_popupMenuTitle == 'Merge') {
                             Stopwatch stopwatch = Stopwatch()..start();
-                            MergeSort mergeSort = MergeSort(intNumbers);
+                            MergeSort mergeSort = MergeSort(floatNumbers);
                             setState(() {
                               result = mergeSort.sort().toString();
-                              time = stopwatch.elapsed;
+                              time =
+                                  'Time taken ${stopwatch.elapsed.toString()}';
                             });
                             stopwatch.stop();
                           }
@@ -212,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             YaruBanner(
                               child: Text(
-                                '$result\n\nTime Taken: $time',
+                                '$result\n\n$time',
                                 style: TextStyle(fontSize: fontSize),
                               ),
                             ),
@@ -220,21 +234,33 @@ class _HomePageState extends State<HomePage> {
                               bottom: 10, // Adjust the top position as needed
                               right: 10, // Adjust the right position as needed
                               child: YaruIconButton(
+                                tooltip: 'Copy the result',
                                 icon: Icon(
-                                  YaruIcons.copy_filled,
+                                  isSnackbar
+                                      ? YaruIcons.copy_filled
+                                      : YaruIcons.copy,
                                   size: fontSize + 5,
                                 ),
                                 onPressed: () async {
                                   await Clipboard.setData(
                                       ClipboardData(text: result.toString()));
                                   setState(() {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Copied to clipboard'),
-                                        showCloseIcon: true,
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
+                                    isSnackbar = !isSnackbar;
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(
+                                          const SnackBar(
+                                            content:
+                                                Text('Copied to clipboard'),
+                                            showCloseIcon: true,
+                                            duration: Duration(seconds: 5),
+                                          ),
+                                        )
+                                        .closed
+                                        .then((value) {
+                                      setState(() {
+                                        isSnackbar = !isSnackbar;
+                                      });
+                                    });
                                   });
                                   //_clipboardIcon = const Icon(YaruIcons.copy);
                                 },
