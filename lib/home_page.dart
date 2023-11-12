@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width.toInt();
     final height = MediaQuery.of(context).size.height.toInt();
+    Orientation orientation = MediaQuery.of(context).orientation;
     final double fontSize;
     if (width >= 1100) {
       fontSize = 24;
@@ -96,9 +97,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               TextFieldTapRegion(
-                onTapOutside: (event) {
-                  f1.requestFocus();
-                },
                 child: Column(
                   children: [
                     Padding(
@@ -253,7 +251,13 @@ class _HomePageState extends State<HomePage> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: SizedBox(
-                        height: height - 350,
+                        height: (orientation == Orientation.landscape) &&
+                                (Platform.isAndroid || Platform.isIOS)
+                            ? height - 100
+                            : (Platform.isAndroid || Platform.isIOS) &&
+                                    (orientation == Orientation.portrait)
+                                ? height - 500
+                                : height - 350,
                         width: width - 50,
                         child: Stack(
                           children: [
