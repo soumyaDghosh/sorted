@@ -20,7 +20,7 @@ An app to test multiple sorting techniques written in Flutter
 
 ### Source
 
-1. Install (Flutter)[https://docs.flutter.dev/get-started/install/linux]
+1. Install [Flutter](https://docs.flutter.dev/get-started/install/linux)
 2. Clone this repository by
 
 `git clone https://github.com/soumyaDghosh/sorted.git && cd sorted`
