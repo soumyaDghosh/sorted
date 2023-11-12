@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           _popupMenuTitle,
                           style: TextStyle(
-                            fontSize: fontSize,
+                            fontSize: fontSize - 2,
                           ),
                         ),
                         itemBuilder: (BuildContext context) {
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                               value: algorithms[index],
                               child: Text(
                                 algorithms[index],
-                                style: TextStyle(fontSize: fontSize),
+                                style: TextStyle(fontSize: fontSize - 2),
                               ),
                               onTap: () =>
                                   selectedAlgorithm = algorithms[index],
@@ -208,15 +208,39 @@ class _HomePageState extends State<HomePage> {
                       child: SizedBox(
                         height: height - 350,
                         width: width - 50,
-                        child: YaruBanner(
-                          child: Text(
-                            '$result\n\nTime Taken: $time',
-                            style: TextStyle(fontSize: fontSize),
-                          ),
-                          onTap: () async {
-                            await Clipboard.setData(
-                                ClipboardData(text: result.toString()));
-                          },
+                        child: Stack(
+                          children: [
+                            YaruBanner(
+                              child: Text(
+                                '$result\n\nTime Taken: $time',
+                                style: TextStyle(fontSize: fontSize),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 10, // Adjust the top position as needed
+                              right: 10, // Adjust the right position as needed
+                              child: YaruIconButton(
+                                icon: Icon(
+                                  YaruIcons.copy_filled,
+                                  size: fontSize + 5,
+                                ),
+                                onPressed: () async {
+                                  await Clipboard.setData(
+                                      ClipboardData(text: result.toString()));
+                                  setState(() {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Copied to clipboard'),
+                                        showCloseIcon: true,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  });
+                                  //_clipboardIcon = const Icon(YaruIcons.copy);
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
