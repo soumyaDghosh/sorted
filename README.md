@@ -13,7 +13,7 @@ An app to test multiple sorting techniques written in Flutter
 - [ ] Allow translation of the app
 - [ ] Add some more algorithms
 - [ ] Add about section
-- [ ] Try to raise more user exceptions
+- [x] Try to raise more user exceptions
 
 
 ## Installation
