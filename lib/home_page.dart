@@ -3,9 +3,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sorted/constants.dart';
 import 'package:sorted/models/bubble_sort.dart';
 import 'package:sorted/models/insertion_sort.dart';
+import 'package:sorted/models/merge_sort.dart';
 import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
@@ -28,13 +30,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width.toInt();
+    final height = MediaQuery.of(context).size.height.toInt();
     return Scaffold(
       appBar: const YaruWindowTitleBar(),
       body: Center(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(20 * 2),
+              padding: const EdgeInsets.only(
+                left: 40,
+                right: 40,
+                top: 40,
+                bottom: 20,
+              ),
               child: TextField(
                 focusNode: f1,
                 autofocus: true,
@@ -109,6 +118,15 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       }
+                      if (selectedAlgorithm == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Select an Algorithm'),
+                            showCloseIcon: true,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                          ),
+                        );
+                      }
                       if (selectedAlgorithm == 'Insertion') {
                         Stopwatch stopwatch = Stopwatch()..start();
                         InsertionSort insertionSort = InsertionSort(intNumbers);
@@ -123,6 +141,15 @@ class _HomePageState extends State<HomePage> {
                         BubbleSort bubbleSort = BubbleSort(intNumbers);
                         setState(() {
                           result = bubbleSort.sort().toString();
+                          time = stopwatch.elapsed;
+                        });
+                        stopwatch.stop();
+                      }
+                      if (selectedAlgorithm == 'Merge') {
+                        Stopwatch stopwatch = Stopwatch()..start();
+                        MergeSort mergeSort = MergeSort(intNumbers);
+                        setState(() {
+                          result = mergeSort.sort().toString();
                           time = stopwatch.elapsed;
                         });
                         stopwatch.stop();
@@ -147,10 +174,14 @@ class _HomePageState extends State<HomePage> {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: SizedBox(
-                      height: 225,
-                      width: 400,
+                      height: height - 300,
+                      width: width - 50,
                       child: YaruBanner(
                         child: Text('$result\n\nTime Taken: $time'),
+                        onTap: () async {
+                          await Clipboard.setData(
+                              ClipboardData(text: result.toString()));
+                        },
                       ),
                     ),
                   ),
