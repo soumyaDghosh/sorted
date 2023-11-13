@@ -6,7 +6,7 @@ class HeaderBar extends StatelessWidget implements PreferredSizeWidget {
   const HeaderBar({
     super.key,
     this.title,
-    this.leading,
+    required this.leading,
     this.actions,
     this.style = YaruTitleBarStyle.normal,
     this.titleSpacing,
@@ -15,7 +15,7 @@ class HeaderBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   final Widget? title;
-  final Widget? leading;
+  final Widget leading;
   final List<Widget>? actions;
   final YaruTitleBarStyle style;
   final double? titleSpacing;
@@ -35,10 +35,13 @@ class HeaderBar extends StatelessWidget implements PreferredSizeWidget {
             style: style,
           )
         : AppBar(
-            centerTitle: true,
-            leading: leading,
+            centerTitle: false,
+            //leading: leading,
             title: title,
-            actions: actions,
+            actions: [leading],
+            backgroundColor: Theme.of(context).canvasColor,
+            elevation: 0,
+            shadowColor: backgroundColor,
           );
   }
 
