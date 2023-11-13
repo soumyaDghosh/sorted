@@ -6,7 +6,7 @@ import 'package:yaru_widgets/yaru_widgets.dart';
 import 'package:yaru/yaru.dart';
 
 Future<void> main() async {
-  if (!Platform.isAndroid) {
+  if (!(Platform.isAndroid || Platform.isIOS || Platform.isFuchsia)) {
     await YaruWindowTitleBar.ensureInitialized();
   }
   runApp(const MyApp());
