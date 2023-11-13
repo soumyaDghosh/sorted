@@ -17,7 +17,10 @@ class _AboutSectionState extends State<AboutSection> {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: YaruIconButton(
-        icon: const Icon(YaruIcons.information_filled),
+        icon: const Tooltip(
+          message: 'About this app',
+          child: Icon(YaruIcons.information_filled),
+        ),
         onPressed: () {
           showAboutDialog(
             context: context,
