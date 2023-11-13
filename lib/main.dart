@@ -18,12 +18,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<ScaffoldMessengerState> snackbarKey =
+        GlobalKey<ScaffoldMessengerState>();
     return YaruTheme(builder: (context, yaru, child) {
       return MaterialApp(
         theme: yaru.theme,
         darkTheme: yaru.darkTheme,
         debugShowCheckedModeBanner: false,
-        home: const HomePage(),
+        home: HomePage(
+          snackbarKey: snackbarKey,
+        ),
+        scaffoldMessengerKey: snackbarKey,
       );
     });
   }

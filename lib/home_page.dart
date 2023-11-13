@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sorted/common/widgets/about_section.dart';
@@ -11,8 +12,8 @@ import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
+  final GlobalKey<ScaffoldMessengerState> snackbarKey;
+  const HomePage({super.key, required this.snackbarKey});
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -27,6 +28,12 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> floatNumbers = [];
   List<String> listNumbers = [];
   bool isSnackbar = false;
+  bool cleared = false;
+  static XTypeGroup typeGroup = const XTypeGroup(
+    label: 'Documents/Text',
+    extensions: ['txt'],
+    mimeTypes: ['text/plain'],
+  );
 
   @override
   void dispose() {
@@ -77,19 +84,55 @@ class _HomePageState extends State<HomePage> {
                   autofocus: true,
                   controller: controller,
                   decoration: InputDecoration(
-                    suffixIcon: YaruIconButton(
-                      icon: const Icon(YaruIcons.edit_clear),
-                      tooltip: 'Clear',
-                      onPressed: () {
-                        setState(() {
-                          controller.clear();
-                          result = '';
-                          time = '';
-                          _popupMenuTitle = 'Select Algorithm';
-                          floatNumbers = [];
-                          time = '';
-                        });
-                      },
+                    suffixIcon: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        YaruIconButton(
+                          icon: const Icon(YaruIcons.document_new),
+                          onPressed: () async {
+                            final XFile? file = await openFile(
+                                acceptedTypeGroups: [typeGroup],
+                                confirmButtonText: 'Select File');
+                            file != null
+                                ? controller.text = await file.readAsString()
+                                : widget.snackbarKey.currentState?.showSnackBar(
+                                    snackBar(
+                                        'No file selected', fontSize, width,
+                                        seconds: 3),
+                                  );
+                          },
+                        ),
+                        YaruIconButton(
+                          icon: Icon(cleared
+                              ? YaruIcons.edit_clear_filled
+                              : YaruIcons.edit_clear),
+                          tooltip: 'Clear',
+                          onPressed: () {
+                            widget.snackbarKey.currentState
+                                ?.showSnackBar(snackBar(
+                                    'Clearing...', fontSize, width,
+                                    seconds: 0,
+                                    microseconds: 1,
+                                    isClosable: false))
+                                .closed
+                                .then((value) {
+                              setState(() {
+                                cleared = !cleared;
+                              });
+                            });
+                            setState(() {
+                              cleared = !cleared;
+                              controller.clear();
+                              result = '';
+                              time = '';
+                              _popupMenuTitle = 'Select Algorithm';
+                              floatNumbers = [];
+                              time = '';
+                            });
+                          },
+                        ),
+                      ],
                     ),
                     hintText: 'Enter the values to sort, separated by commas',
                     filled: true,
@@ -142,10 +185,9 @@ class _HomePageState extends State<HomePage> {
                         String t1 = controller.text;
                         try {
                           if (t1.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            widget.snackbarKey.currentState?.showSnackBar(
                               snackBar(
                                 'Dataset is empty!!',
-                                5,
                                 fontSize,
                                 width,
                               ),
@@ -158,13 +200,13 @@ class _HomePageState extends State<HomePage> {
                               .map((s) => int.tryParse(s) ?? double.parse(s))
                               .toList();
                         } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              snackBar(e.toString(), 5, fontSize, width));
+                          widget.snackbarKey.currentState?.showSnackBar(
+                              snackBar(e.toString(), fontSize, width));
                           return;
                         }
                         if (selectedAlgorithm == '') {
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar(
-                              'Select an Algorithm', 5, fontSize, width));
+                          widget.snackbarKey.currentState?.showSnackBar(
+                              snackBar('Select an Algorithm', fontSize, width));
                           return;
                         }
                         if (selectedAlgorithm == 'Insertion') {
@@ -294,7 +336,6 @@ class _HomePageState extends State<HomePage> {
                                             result.isNotEmpty
                                                 ? 'Copied to clipboard'
                                                 : 'Nothing to copy',
-                                            5,
                                             fontSize,
                                             width,
                                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-SnackBar snackBar(String text, int seconds, double fontsize, int width) {
+SnackBar snackBar(String text, double fontsize, int width,
+    {bool isClosable = true, int microseconds = 0, int seconds = 5}) {
   return SnackBar(
     content: Text(
       text,
@@ -9,8 +10,8 @@ SnackBar snackBar(String text, int seconds, double fontsize, int width) {
       ),
     ),
     behavior: SnackBarBehavior.floating,
-    showCloseIcon: true,
-    duration: Duration(seconds: seconds),
+    showCloseIcon: isClosable,
+    duration: Duration(seconds: seconds, microseconds: microseconds),
     width: width - 50,
   );
 }
