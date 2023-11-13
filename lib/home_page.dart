@@ -61,10 +61,10 @@ class _HomePageState extends State<HomePage> {
     }
 
     return YaruDetailPage(
-      appBar: HeaderBar(
-        title: const Text('Sorted'),
-        leading: const AboutSection(),
-        style: isMobile ? YaruTitleBarStyle.hidden : YaruTitleBarStyle.normal,
+      appBar: const HeaderBar(
+        title: Text('Sorted'),
+        leading: AboutSection(),
+        style: YaruTitleBarStyle.normal,
       ),
       body: Center(
         child: SingleChildScrollView(
