@@ -42,9 +42,9 @@ class _HomePageState extends State<HomePage> {
     Orientation orientation = MediaQuery.of(context).orientation;
     final double fontSize;
     if (width >= 1100) {
-      fontSize = 24;
+      fontSize = 21;
     } else if (width >= 800 && width < 1100) {
-      fontSize = 22;
+      fontSize = 20;
     } else if (width >= 600 && width < 800) {
       fontSize = 18;
     } else {
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           _popupMenuTitle,
                           style: TextStyle(
-                            fontSize: width < 600 ? 13 : fontSize - 5,
+                            fontSize: width < 600 ? 13 : fontSize - 8,
                           ),
                         ),
                         itemBuilder: (BuildContext context) {
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                               child: Text(
                                 algorithms[index],
                                 style: TextStyle(
-                                    fontSize: width < 600 ? 15 : fontSize - 5),
+                                    fontSize: width < 600 ? 15 : fontSize - 8),
                               ),
                               onTap: () =>
                                   selectedAlgorithm = algorithms[index],
@@ -212,8 +212,8 @@ class _HomePageState extends State<HomePage> {
                           EdgeInsets.only(
                             top: 20,
                             bottom: 20,
-                            left: width / 7,
-                            right: width / 7,
+                            left: width > 1000 ? width / 15 : width / 7,
+                            right: width > 1000 ? width / 15 : width / 7,
                           ),
                         ),
                       ),
@@ -240,7 +240,9 @@ class _HomePageState extends State<HomePage> {
                             : (Platform.isAndroid || Platform.isIOS) &&
                                     (orientation == Orientation.portrait)
                                 ? height - 500
-                                : height - 350,
+                                : width > 800 && height > 1000
+                                    ? height - 450
+                                    : height - 350,
                         width: width - 50,
                         child: Stack(
                           children: [
