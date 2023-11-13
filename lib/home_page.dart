@@ -3,11 +3,13 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sorted/common/widgets/about_section.dart';
+import 'package:sorted/common/widgets/header_bar.dart';
 import 'package:sorted/common/widgets/snack_bar.dart';
 import 'package:sorted/constants.dart';
 import 'package:sorted/models/bubble_sort.dart';
 import 'package:sorted/models/insertion_sort.dart';
 import 'package:sorted/models/merge_sort.dart';
+import 'package:yaru/yaru.dart';
 import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
@@ -58,16 +60,12 @@ class _HomePageState extends State<HomePage> {
       fontSize = 15;
     }
 
-    return Scaffold(
-      appBar: Platform.isAndroid || Platform.isIOS
-          ? AppBar(
-              title: const Text('Sorted'),
-              actions: const [AboutSection()],
-            )
-          : const YaruWindowTitleBar(
-              title: Text('Sorted'),
-              leading: AboutSection(),
-            ),
+    return YaruDetailPage(
+      appBar: HeaderBar(
+        title: const Text('Sorted'),
+        leading: const AboutSection(),
+        style: isMobile ? YaruTitleBarStyle.hidden : YaruTitleBarStyle.normal,
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -91,6 +89,7 @@ class _HomePageState extends State<HomePage> {
                         YaruIconButton(
                           icon: const Icon(YaruIcons.document_new),
                           onPressed: () async {
+                            setState(() {});
                             final XFile? file = await openFile(
                                 acceptedTypeGroups: [typeGroup],
                                 confirmButtonText: 'Select File');
