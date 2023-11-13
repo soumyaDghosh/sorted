@@ -1,9 +1,8 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sorted/common/widgets/about_tile.dart';
+import 'package:sorted/common/widgets/about_section.dart';
+import 'package:sorted/common/widgets/snack_bar.dart';
 import 'package:sorted/constants.dart';
 import 'package:sorted/models/bubble_sort.dart';
 import 'package:sorted/models/insertion_sort.dart';
@@ -56,13 +55,11 @@ class _HomePageState extends State<HomePage> {
       appBar: Platform.isAndroid || Platform.isIOS
           ? AppBar(
               title: const Text('Sorted'),
-              actions: [
-                aboutSection(context, width),
-              ],
+              actions: const [AboutSection()],
             )
-          : YaruWindowTitleBar(
-              title: const Text('Sorted'),
-              leading: aboutSection(context, width),
+          : const YaruWindowTitleBar(
+              title: Text('Sorted'),
+              leading: AboutSection(),
             ),
       body: Center(
         child: SingleChildScrollView(
@@ -146,10 +143,11 @@ class _HomePageState extends State<HomePage> {
                         try {
                           if (t1.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Dataset is empty'),
-                                showCloseIcon: true,
-                                duration: Duration(seconds: 5),
+                              snackBar(
+                                'Dataset is empty!!',
+                                5,
+                                fontSize,
+                                width,
                               ),
                             );
                             return;
@@ -161,30 +159,12 @@ class _HomePageState extends State<HomePage> {
                               .toList();
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                e.toString(),
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                              behavior: SnackBarBehavior.floating,
-                              showCloseIcon: true,
-                              width: width - 50,
-                            ),
-                          );
+                              snackBar(e.toString(), 5, fontSize, width));
                           return;
                         }
                         if (selectedAlgorithm == '') {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Select an Algorithm',
-                                style: TextStyle(fontSize: fontSize),
-                              ),
-                              showCloseIcon: true,
-                              clipBehavior: Clip.antiAliasWithSaveLayer,
-                              duration: const Duration(seconds: 5),
-                            ),
-                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar(
+                              'Select an Algorithm', 5, fontSize, width));
                           return;
                         }
                         if (selectedAlgorithm == 'Insertion') {
@@ -300,17 +280,21 @@ class _HomePageState extends State<HomePage> {
                                   size: fontSize + 5,
                                 ),
                                 onPressed: () async {
-                                  await Clipboard.setData(
-                                      ClipboardData(text: result.toString()));
+                                  result.isNotEmpty
+                                      ? await Clipboard.setData(ClipboardData(
+                                          text: result.toString()))
+                                      : null;
                                   setState(() {
                                     isSnackbar = !isSnackbar;
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(
-                                          const SnackBar(
-                                            content:
-                                                Text('Copied to clipboard'),
-                                            showCloseIcon: true,
-                                            duration: Duration(seconds: 5),
+                                          snackBar(
+                                            result.isNotEmpty
+                                                ? 'Copied to clipboard'
+                                                : 'Nothing to copy',
+                                            5,
+                                            fontSize,
+                                            width,
                                           ),
                                         )
                                         .closed
@@ -320,7 +304,6 @@ class _HomePageState extends State<HomePage> {
                                       });
                                     });
                                   });
-                                  //_clipboardIcon = const Icon(YaruIcons.copy);
                                 },
                               ),
                             ),
