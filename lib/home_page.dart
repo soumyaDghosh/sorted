@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                           Sort bubbleSort = Sort(floatNumbers,
                               optionSelected.contains('reversed'));
                           setState(() {
-                            result = bubbleSort.insertionSort().toString();
+                            result = bubbleSort.bubbleSort().toString();
                             time = 'Time taken ${stopwatch.elapsed.toString()}';
                           });
                           stopwatch.stop();
