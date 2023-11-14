@@ -60,9 +60,11 @@ class _HomePageState extends State<HomePage> {
     }
 
     return YaruDetailPage(
-      appBar: const HeaderBar(
-        title: Text('Sorted'),
-        leading: AboutSection(),
+      appBar: HeaderBar(
+        title: const Text('Sorted'),
+        leading: AboutSection(
+          width: width,
+        ),
         style: YaruTitleBarStyle.normal,
       ),
       body: Center(
@@ -140,38 +142,40 @@ class _HomePageState extends State<HomePage> {
               TextFieldTapRegion(
                 child: Column(
                   children: [
-                    SizedBox(
-                      width: width - 100,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          for (var choice in chipOptions)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: width / 100,
-                                right: width / 100,
-                                bottom:
-                                    optionSelected.contains('manual') ? 0 : 20,
-                              ),
-                              child: ChoiceChip(
-                                label: Text(choice),
-                                selected: optionSelected.contains(choice),
-                                onSelected: (value) {
-                                  setState(() {
-                                    if (value) {
-                                      optionSelected.add(choice);
-                                    } else {
-                                      optionSelected.remove(choice);
+                    Center(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (var choice in chipOptions)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: width / 100,
+                                  right: width / 100,
+                                  bottom: optionSelected.contains('manual')
+                                      ? 0
+                                      : 20,
+                                ),
+                                child: ChoiceChip(
+                                  label: Text(choice),
+                                  selected: optionSelected.contains(choice),
+                                  onSelected: (value) {
+                                    setState(() {
+                                      if (value) {
+                                        optionSelected.add(choice);
+                                      } else {
+                                        optionSelected.remove(choice);
+                                      }
+                                    });
+                                    if (choice == 'manual') {
+                                      _popupMenuTitle = 'Select Algorithm';
+                                      selectedAlgorithm = '';
                                     }
-                                  });
-                                  if (choice == 'manual') {
-                                    _popupMenuTitle = 'Select Algorithm';
-                                    selectedAlgorithm = '';
-                                  }
-                                },
+                                  },
+                                ),
                               ),
-                            ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     if (optionSelected.contains('manual'))
