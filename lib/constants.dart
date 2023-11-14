@@ -15,3 +15,5 @@ Future<void> _launchUrl(Uri _url) async {
     throw Exception('Could not launch $_url');
   }
 }
+
+const List<String> chipOptions = ['reversed', 'manual', 'csv'];
