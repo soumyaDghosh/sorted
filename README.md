@@ -1,6 +1,6 @@
 # sorted
 
-An app to test multiple sorting techniques written in Flutter
+An app to test multiple sorting techniques written in Flutter.
 
 ## For first release
 
