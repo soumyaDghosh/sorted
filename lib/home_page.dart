@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:csv/csv.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   static XTypeGroup typeGroup = const XTypeGroup(
     label: 'Documents/Text',
     extensions: ['txt'],
-    mimeTypes: ['text/plain'],
+    mimeTypes: ['text/plain', 'text/csv'],
   );
 
   @override
@@ -60,11 +61,9 @@ class _HomePageState extends State<HomePage> {
     }
 
     return YaruDetailPage(
-      appBar: HeaderBar(
-        title: const Text('Sorted'),
-        leading: AboutSection(
-          width: width,
-        ),
+      appBar: const HeaderBar(
+        title: Text('Sorted'),
+        leading: AboutSection(),
         style: YaruTitleBarStyle.normal,
       ),
       body: Center(
@@ -94,6 +93,7 @@ class _HomePageState extends State<HomePage> {
                             final XFile? file = await openFile(
                                 acceptedTypeGroups: [typeGroup],
                                 confirmButtonText: 'Select File');
+
                             file != null
                                 ? controller.text = await file.readAsString()
                                 : widget.snackbarKey.currentState?.showSnackBar(
