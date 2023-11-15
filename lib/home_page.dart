@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:csv/csv.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,10 +7,7 @@ import 'package:sorted/common/widgets/about_section.dart';
 import 'package:sorted/common/widgets/header_bar.dart';
 import 'package:sorted/common/widgets/snack_bar.dart';
 import 'package:sorted/constants.dart';
-import 'package:sorted/models/bubble_sort.dart';
-import 'package:sorted/models/insertion_sort.dart';
-import 'package:sorted/models/merge_sort.dart';
-import 'package:yaru/yaru.dart';
+import 'package:sorted/models/sort_algos.dart';
 import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
@@ -25,16 +23,18 @@ class _HomePageState extends State<HomePage> {
   final FocusNode f1 = FocusNode();
   String _popupMenuTitle = 'Select Algorithm';
   String selectedAlgorithm = '';
+  String defaultAlgorithm = 'Merge';
   String result = '';
   String time = '';
   List<dynamic> floatNumbers = [];
   List<String> listNumbers = [];
   bool isSnackbar = false;
   bool cleared = false;
+  List<String> optionSelected = [];
   static XTypeGroup typeGroup = const XTypeGroup(
     label: 'Documents/Text',
     extensions: ['txt'],
-    mimeTypes: ['text/plain'],
+    mimeTypes: ['text/plain', 'text/csv'],
   );
 
   @override
@@ -93,6 +93,7 @@ class _HomePageState extends State<HomePage> {
                             final XFile? file = await openFile(
                                 acceptedTypeGroups: [typeGroup],
                                 confirmButtonText: 'Select File');
+
                             file != null
                                 ? controller.text = await file.readAsString()
                                 : widget.snackbarKey.currentState?.showSnackBar(
@@ -141,46 +142,81 @@ class _HomePageState extends State<HomePage> {
               TextFieldTapRegion(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: 20,
-                        bottom: 40,
-                      ),
-                      child: YaruPopupMenuButton(
-                        tooltip: 'Select the Algorithm',
-                        enableFeedback: true,
-                        child: Text(
-                          _popupMenuTitle,
-                          style: TextStyle(
-                            fontSize: width < 600 ? 13 : fontSize - 8,
-                          ),
-                        ),
-                        itemBuilder: (BuildContext context) {
-                          return List.generate(algorithms.length, (index) {
-                            return PopupMenuItem<String>(
-                              value: algorithms[index],
-                              child: Text(
-                                algorithms[index],
-                                style: TextStyle(
-                                    fontSize: width < 600 ? 15 : fontSize - 8),
+                    Center(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            for (var choice in chipOptions)
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: width / 100,
+                                  right: width / 100,
+                                  bottom: optionSelected.contains('manual')
+                                      ? 0
+                                      : 20,
+                                ),
+                                child: ChoiceChip(
+                                  label: Text(choice),
+                                  selected: optionSelected.contains(choice),
+                                  onSelected: (value) {
+                                    setState(() {
+                                      if (value) {
+                                        optionSelected.add(choice);
+                                      } else {
+                                        optionSelected.remove(choice);
+                                      }
+                                    });
+                                    if (choice == 'manual') {
+                                      _popupMenuTitle = 'Select Algorithm';
+                                      selectedAlgorithm = '';
+                                    }
+                                  },
+                                ),
                               ),
-                              onTap: () =>
-                                  selectedAlgorithm = algorithms[index],
-                            );
-                          });
-                        },
-                        onSelected: (value) {
-                          // Update the selected option and trigger a rebuild
-                          setState(() {
-                            _popupMenuTitle = value;
-                          });
-                        },
+                          ],
+                        ),
                       ),
                     ),
+                    if (optionSelected.contains('manual'))
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: YaruPopupMenuButton(
+                          tooltip: 'Select the Algorithm',
+                          enableFeedback: true,
+                          child: Text(
+                            _popupMenuTitle,
+                            style: TextStyle(
+                              fontSize: width < 600 ? 13 : fontSize - 8,
+                            ),
+                          ),
+                          itemBuilder: (BuildContext context) {
+                            return List.generate(algorithms.length, (index) {
+                              return PopupMenuItem<String>(
+                                value: algorithms[index],
+                                child: Text(
+                                  algorithms[index],
+                                  style: TextStyle(
+                                      fontSize:
+                                          width < 600 ? 15 : fontSize - 8),
+                                ),
+                                onTap: () =>
+                                    selectedAlgorithm = algorithms[index],
+                              );
+                            });
+                          },
+                          onSelected: (value) {
+                            setState(() {
+                              _popupMenuTitle = value;
+                            });
+                          },
+                        ),
+                      ),
                     TextButton(
                       onPressed: () {
+                        selectedAlgorithm = optionSelected.contains('manual')
+                            ? selectedAlgorithm
+                            : defaultAlgorithm;
                         String t1 = controller.text;
                         try {
                           if (t1.isEmpty) {
@@ -210,28 +246,30 @@ class _HomePageState extends State<HomePage> {
                         }
                         if (selectedAlgorithm == 'Insertion') {
                           Stopwatch stopwatch = Stopwatch()..start();
-                          InsertionSort insertionSort =
-                              InsertionSort(floatNumbers);
+                          Sort insertionSort = Sort(floatNumbers,
+                              optionSelected.contains('reversed'));
                           setState(() {
-                            result = insertionSort.sort().toString();
+                            result = insertionSort.insertionSort().toString();
                             time = 'Time taken ${stopwatch.elapsed.toString()}';
                           });
                           stopwatch.stop();
                         }
                         if (selectedAlgorithm == 'Bubble') {
                           Stopwatch stopwatch = Stopwatch()..start();
-                          BubbleSort bubbleSort = BubbleSort(floatNumbers);
+                          Sort bubbleSort = Sort(floatNumbers,
+                              optionSelected.contains('reversed'));
                           setState(() {
-                            result = bubbleSort.sort().toString();
+                            result = bubbleSort.bubbleSort().toString();
                             time = 'Time taken ${stopwatch.elapsed.toString()}';
                           });
                           stopwatch.stop();
                         }
                         if (selectedAlgorithm == 'Merge') {
                           Stopwatch stopwatch = Stopwatch()..start();
-                          MergeSort mergeSort = MergeSort(floatNumbers);
+                          Sort mergeSort = Sort(floatNumbers,
+                              optionSelected.contains('reversed'));
                           setState(() {
-                            result = mergeSort.sort().toString();
+                            result = mergeSort.mergeSort().toString();
                             time = 'Time taken ${stopwatch.elapsed.toString()}';
                           });
                           stopwatch.stop();

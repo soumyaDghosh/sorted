@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simple_icons/simple_icons.dart';
+import 'package:sorted/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
@@ -23,37 +23,24 @@ class _AboutSectionState extends State<AboutSection> {
         ),
         onPressed: () {
           showAboutDialog(
-            context: context,
-            applicationName: 'Sorted',
-            applicationVersion: '0.1',
-            children: [
-              InkWell(
-                child: Text(
-                  'Copyright by Soumyadeep Ghosh 2023 and onwards - all rights reserved',
-                  style: TextStyle(color: Theme.of(context).primaryColor),
-                ),
-                onTap: () => launchUrl(
-                  Uri.parse('https://github.com/soumyaDghosh'),
-                ),
+              context: context,
+              applicationName: 'Sorted',
+              applicationVersion: '0.1',
+              applicationIcon: YaruIconButton(
+                icon: Image.asset(appIcon),
+                onPressed: () => launchUrl(Uri.parse(githubProject)),
               ),
-              YaruIconButton(
-                icon: const Icon(SimpleIcons.aboutdotme),
-                onPressed: () {
-                  launchUrl(
-                    Uri.parse('https://soumyadghosh.github.io/portfolio/'),
-                  );
-                },
-              ),
-              YaruIconButton(
-                icon: const Icon(SimpleIcons.github),
-                onPressed: () {
-                  launchUrl(
-                    Uri.parse('https://github.com/soumyaDghosh/sorted'),
-                  );
-                },
-              ),
-            ],
-          );
+              children: [
+                InkWell(
+                  child: Text(
+                    'Copyright © Soumyadeep Ghosh 2023 and onwards. All rights reserved.',
+                    style: TextStyle(color: Theme.of(context).primaryColor),
+                  ),
+                  onTap: () => launchUrl(
+                    Uri.parse(githubMe),
+                  ),
+                )
+              ]);
         },
       ),
     );

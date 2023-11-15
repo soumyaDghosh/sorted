@@ -1,11 +1,28 @@
-class MergeSort {
+class Sort {
   List<dynamic> numbers;
+  bool reversed;
 
-  MergeSort(this.numbers);
+  Sort(this.numbers, this.reversed);
 
-  List<dynamic> sort() {
+  List<dynamic> bubbleSort() {
+    int n = numbers.length;
+
+    for (int i = 0; i < n - 1; i++) {
+      for (int j = 0; j < n - i - 1; j++) {
+        if (numbers[j] > numbers[j + 1]) {
+          // Swap numbers[j] and numbers[j+1]
+          dynamic temp = numbers[j];
+          numbers[j] = numbers[j + 1];
+          numbers[j + 1] = temp;
+        }
+      }
+    }
+    return reversed ? numbers.reversed.toList() : numbers;
+  }
+
+  List<dynamic> mergeSort() {
     _mergeSort(0, numbers.length - 1);
-    return numbers;
+    return reversed ? numbers.reversed.toList() : numbers;
   }
 
   void _mergeSort(int low, int high) {
@@ -63,5 +80,23 @@ class MergeSort {
       j++;
       k++;
     }
+  }
+
+  List<dynamic> insertionSort() {
+    int n = numbers.length;
+
+    for (int i = 1; i < n; i++) {
+      dynamic key = numbers[i];
+      int j = i - 1;
+
+      // Move elements that are greater than key to one position ahead
+      // of their current position
+      while (j >= 0 && numbers[j] > key) {
+        numbers[j + 1] = numbers[j];
+        j = j - 1;
+      }
+      numbers[j + 1] = key;
+    }
+    return reversed ? numbers.reversed.toList() : numbers;
   }
 }
