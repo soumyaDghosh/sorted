@@ -33,7 +33,7 @@ class _AboutSectionState extends State<AboutSection> {
               children: [
                 InkWell(
                   child: Text(
-                    'Copyright by Soumyadeep Ghosh 2023 and onwards - all rights reserved',
+                    'Copyright © Soumyadeep Ghosh 2023 and onwards. All rights reserved.',
                     style: TextStyle(color: Theme.of(context).primaryColor),
                   ),
                   onTap: () => launchUrl(
