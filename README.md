@@ -14,6 +14,7 @@ An app to test multiple sorting techniques written in Flutter
 - [ ] Add some more algorithms
 - [ ] Add about section
 - [x] Try to raise more user exceptions
+- [ ] Copy the result in `pdf` format
 
 
 ## Installation
