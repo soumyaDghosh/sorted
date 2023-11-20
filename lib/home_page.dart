@@ -1,13 +1,14 @@
 import 'dart:io';
-import 'package:csv/csv.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sorted/common/widgets/about_section.dart';
+import 'package:sorted/common/widgets/choice_chip_bar.dart';
 import 'package:sorted/common/widgets/header_bar.dart';
 import 'package:sorted/common/widgets/snack_bar.dart';
 import 'package:sorted/constants.dart';
 import 'package:sorted/models/sort_algos.dart';
+import 'package:yaru/yaru.dart';
 import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
@@ -46,12 +47,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool lightTheme = Theme.of(context).brightness == Brightness.light;
     final width = MediaQuery.of(context).size.width.toInt();
     final height = MediaQuery.of(context).size.height.toInt();
     Orientation orientation = MediaQuery.of(context).orientation;
     final double fontSize;
     if (width >= 1100) {
-      fontSize = 21;
+      fontSize = 20.5;
     } else if (width >= 800 && width < 1100) {
       fontSize = 20;
     } else if (width >= 600 && width < 800) {
@@ -59,345 +61,381 @@ class _HomePageState extends State<HomePage> {
     } else {
       fontSize = 15;
     }
+    final stack = Stack(
+      children: [
+        YaruBanner(
+          color: lightTheme ? bannerBackground : bannerBackgorundDark,
+          child: Column(
+            children: [
+              Flexible(
+                child: SingleChildScrollView(
+                  child: SelectableText(
+                    result,
+                    style: TextStyle(
+                      fontSize: fontSize + 10,
+                      fontWeight:
+                          lightTheme ? FontWeight.w700 : FontWeight.w100,
+                    ),
+                  ),
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 20),
+              //   child: SelectionArea(
+              //     child: SelectableText(
+              //       time,
+              //       style: TextStyle(
+              //         fontSize: fontSize,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+        // if (result.isEmpty)
+        //   Positioned(
+        //     child: YaruLinearProgressIndicator(),
+        //   ),
+        Positioned(
+          bottom: 10, // Adjust the top position as needed
+          right: 10, // Adjust the right position as needed
+          child: YaruIconButton(
+            tooltip: 'Copy the result',
+            icon: Icon(
+              isSnackbar ? YaruIcons.copy_filled : YaruIcons.copy,
+              size: fontSize + 5,
+            ),
+            onPressed: () async {
+              result.isNotEmpty
+                  ? await Clipboard.setData(
+                      ClipboardData(text: result.toString()))
+                  : null;
+              setState(() {
+                isSnackbar = !isSnackbar;
+                widget.snackbarKey.currentState
+                    ?.showSnackBar(
+                      snackBar(
+                        result.isNotEmpty
+                            ? 'Copied to clipboard'
+                            : 'Nothing to copy',
+                        fontSize,
+                        width,
+                        widget.snackbarKey,
+                      ),
+                    )
+                    .closed
+                    .then((value) {
+                  setState(() {
+                    isSnackbar = !isSnackbar;
+                  });
+                });
+              });
+            },
+          ),
+        ),
+      ],
+    );
 
+    var column = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 40,
+            right: 40,
+            top: 20,
+            bottom: 20,
+          ),
+          child: TextField(
+            maxLines: 2,
+            focusNode: f1,
+            autofocus: true,
+            controller: controller,
+            decoration: InputDecoration(
+              fillColor: lightTheme ? bannerBackground : bannerBackgorundDark,
+              suffixIcon: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  YaruIconButton(
+                    icon: const Icon(YaruIcons.document_new),
+                    onPressed: () async {
+                      setState(() {});
+                      final XFile? file = await openFile(
+                          acceptedTypeGroups: [typeGroup],
+                          confirmButtonText: 'Select File');
+
+                      file != null
+                          ? controller.text = await file.readAsString()
+                          : widget.snackbarKey.currentState?.showSnackBar(
+                              snackBar(errorMessages[2], fontSize, width,
+                                  widget.snackbarKey,
+                                  seconds: 3),
+                            );
+                    },
+                  ),
+                  YaruIconButton(
+                    icon: Icon(cleared
+                        ? YaruIcons.edit_clear_filled
+                        : YaruIcons.edit_clear),
+                    tooltip: 'Clear',
+                    onPressed: () {
+                      widget.snackbarKey.currentState
+                          ?.showSnackBar(snackBar('Clearing...', fontSize,
+                              width, widget.snackbarKey,
+                              seconds: 0, microseconds: 1, isClosable: false))
+                          .closed
+                          .then((value) {
+                        setState(() {
+                          cleared = !cleared;
+                        });
+                      });
+                      setState(() {
+                        cleared = !cleared;
+                        controller.clear();
+                        result = '';
+                        time = '';
+                        _popupMenuTitle = 'Select Algorithm';
+                        floatNumbers = [];
+                        time = '';
+                        selectedAlgorithm = '';
+                      });
+                    },
+                  ),
+                ],
+              ),
+              hintText: 'Enter the values to sort, separated by commas',
+              filled: true,
+            ),
+          ),
+        ),
+        TextFieldTapRegion(
+          child: Column(
+            children: [
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: width / 100,
+                    right: width / 100,
+                    bottom: optionSelected.contains(chipOptions[1]) ? 0 : 20,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 40,
+                      right: 40,
+                    ),
+                    child: CustomYaruChoiceChipBar(
+                        clearOnSelect: false,
+                        preferSelected: false,
+                        labels: List.generate(chipOptions.length, (index) {
+                          return Text(chipOptions[index]);
+                        }),
+                        isSelected: List.generate(
+                            chipOptions.length,
+                            (index) =>
+                                optionSelected.contains(chipOptions[index])),
+                        onSelected: (index) {
+                          setState(() {
+                            optionSelected.contains(chipOptions[index])
+                                ? optionSelected.remove(chipOptions[index])
+                                : optionSelected.add(chipOptions[index]);
+                          });
+                          if (optionSelected.contains(chipOptions[1])) {
+                            _popupMenuTitle = 'Select Algorithm';
+                            selectedAlgorithm = '';
+                          }
+                        }),
+                  ),
+                ),
+              ),
+              if (optionSelected.contains(chipOptions[1]))
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: YaruPopupMenuButton(
+                    tooltip: 'Select the Algorithm',
+                    enableFeedback: true,
+                    child: Text(
+                      _popupMenuTitle,
+                      style: TextStyle(
+                        fontSize: width < 600 ? 13 : fontSize - 8,
+                      ),
+                    ),
+                    itemBuilder: (BuildContext context) {
+                      return List.generate(algorithms.length, (index) {
+                        return PopupMenuItem<String>(
+                          value: algorithms[index],
+                          child: Text(
+                            algorithms[index],
+                            style: TextStyle(
+                                fontSize: width < 600 ? 15 : fontSize - 8),
+                          ),
+                          onTap: () => selectedAlgorithm = algorithms[index],
+                        );
+                      });
+                    },
+                    onSelected: (value) {
+                      setState(() {
+                        _popupMenuTitle = value;
+                      });
+                    },
+                  ),
+                ),
+              TextButton(
+                onPressed: () {
+                  selectedAlgorithm = optionSelected.contains(chipOptions[1])
+                      ? selectedAlgorithm
+                      : defaultAlgorithm;
+                  String t1 = controller.text.trim();
+                  try {
+                    if (t1.isEmpty) {
+                      widget.snackbarKey.currentState?.showSnackBar(
+                        snackBar(
+                          errorMessages[0],
+                          fontSize,
+                          width,
+                          widget.snackbarKey,
+                          seconds: 10,
+                        ),
+                      );
+                      return;
+                    }
+                    listNumbers = t1.split(',').map((s) => s.trim()).toList();
+                    floatNumbers = listNumbers
+                        .map((s) => int.tryParse(s) ?? double.parse(s))
+                        .toList();
+                  } catch (e) {
+                    widget.snackbarKey.currentState?.showSnackBar(snackBar(
+                        e.toString(), fontSize, width, widget.snackbarKey));
+                    return;
+                  }
+                  //if (selectedAlgorithm == '') {
+                  //  return;
+                  //}
+                  Stopwatch stopwatch = Stopwatch()..start();
+                  Sort sort = Sort(
+                    floatNumbers,
+                    optionSelected.contains('reversed'),
+                    widget.snackbarKey,
+                    fontSize,
+                    width,
+                  );
+                  setState(() {
+                    try {
+                      result = sort.getMethod(selectedAlgorithm);
+                      time = stopwatch.elapsed.toString();
+                      widget.snackbarKey.currentState?.showSnackBar(snackBar(
+                        'Done in $time',
+                        fontSize,
+                        width,
+                        widget.snackbarKey,
+                        seconds: 5,
+                      ));
+                    } catch (e) {
+                      widget.snackbarKey.currentState?.showSnackBar(snackBar(
+                          e.toString(), fontSize, width, widget.snackbarKey));
+                    }
+                  });
+                  stopwatch.stop();
+                  // if (selectedAlgorithm == 'Insertion') {
+                  //   Stopwatch stopwatch = Stopwatch()..start();
+                  //   Sort insertionSort = Sort(floatNumbers,
+                  //       optionSelected.contains('reversed'));
+                  //   setState(() {
+                  //     result = insertionSort.insertionSort().toString();
+                  //     time = 'Time taken ${stopwatch.elapsed.toString()}';
+                  //   });
+                  //   stopwatch.stop();
+                  // }
+                  // if (selectedAlgorithm == 'Bubble') {
+                  //   Stopwatch stopwatch = Stopwatch()..start();
+                  //   Sort bubbleSort = Sort(floatNumbers,
+                  //       optionSelected.contains('reversed'));
+                  //   setState(() {
+                  //     result = bubbleSort.bubbleSort().toString();
+                  //     time = 'Time taken ${stopwatch.elapsed.toString()}';
+                  //   });
+                  //   stopwatch.stop();
+                  // }
+                  // if (selectedAlgorithm == 'Merge') {
+                  //   Stopwatch stopwatch = Stopwatch()..start();
+                  //   Sort mergeSort = Sort(floatNumbers,
+                  //       optionSelected.contains('reversed'));
+                  //   setState(() {
+                  //     result = mergeSort.mergeSort().toString();
+                  //     time = 'Time taken ${stopwatch.elapsed.toString()}';
+                  //   });
+                  //   stopwatch.stop();
+                  // }
+                },
+                style: ButtonStyle(
+                  backgroundColor: isMobile
+                      ? MaterialStatePropertyAll(Colors.deepOrange[500])
+                      : MaterialStatePropertyAll(
+                          Theme.of(context).primaryColor,
+                        ),
+                  shape: const MaterialStatePropertyAll<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                  ),
+                  padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
+                    EdgeInsets.only(
+                      top: isMobile ? 5 : 20,
+                      bottom: isMobile ? 5 : 20,
+                      left: width > 1000 ? width / 15 : width / 7,
+                      right: width > 1000 ? width / 15 : width / 7,
+                    ),
+                  ),
+                ),
+                child: Tooltip(
+                  message: 'click to sort',
+                  child: Text(
+                    'Sort',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: SizedBox(
+                  height: (orientation == Orientation.landscape) &&
+                          (Platform.isAndroid || Platform.isIOS)
+                      ? height - 50
+                      : (Platform.isAndroid || Platform.isIOS) &&
+                              (orientation == Orientation.portrait)
+                          ? height - 500
+                          : width > 800 && height > 1000
+                              ? height - 500
+                              : height - 410,
+                  width: width - 50,
+                  child: stack,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
     return YaruDetailPage(
       appBar: const HeaderBar(
         title: Text('Sorted'),
         leading: AboutSection(),
         style: YaruTitleBarStyle.normal,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 40,
-                  right: 40,
-                  top: 20,
-                  bottom: 20,
-                ),
-                child: TextField(
-                  focusNode: f1,
-                  autofocus: true,
-                  controller: controller,
-                  decoration: InputDecoration(
-                    suffixIcon: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        YaruIconButton(
-                          icon: const Icon(YaruIcons.document_new),
-                          onPressed: () async {
-                            setState(() {});
-                            final XFile? file = await openFile(
-                                acceptedTypeGroups: [typeGroup],
-                                confirmButtonText: 'Select File');
-
-                            file != null
-                                ? controller.text = await file.readAsString()
-                                : widget.snackbarKey.currentState?.showSnackBar(
-                                    snackBar(
-                                        'No file selected', fontSize, width,
-                                        seconds: 3),
-                                  );
-                          },
-                        ),
-                        YaruIconButton(
-                          icon: Icon(cleared
-                              ? YaruIcons.edit_clear_filled
-                              : YaruIcons.edit_clear),
-                          tooltip: 'Clear',
-                          onPressed: () {
-                            widget.snackbarKey.currentState
-                                ?.showSnackBar(snackBar(
-                                    'Clearing...', fontSize, width,
-                                    seconds: 0,
-                                    microseconds: 1,
-                                    isClosable: false))
-                                .closed
-                                .then((value) {
-                              setState(() {
-                                cleared = !cleared;
-                              });
-                            });
-                            setState(() {
-                              cleared = !cleared;
-                              controller.clear();
-                              result = '';
-                              time = '';
-                              _popupMenuTitle = 'Select Algorithm';
-                              floatNumbers = [];
-                              time = '';
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    hintText: 'Enter the values to sort, separated by commas',
-                    filled: true,
-                  ),
-                ),
-              ),
-              TextFieldTapRegion(
-                child: Column(
-                  children: [
-                    Center(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            for (var choice in chipOptions)
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: width / 100,
-                                  right: width / 100,
-                                  bottom: optionSelected.contains('manual')
-                                      ? 0
-                                      : 20,
-                                ),
-                                child: ChoiceChip(
-                                  label: Text(choice),
-                                  selected: optionSelected.contains(choice),
-                                  onSelected: (value) {
-                                    setState(() {
-                                      if (value) {
-                                        optionSelected.add(choice);
-                                      } else {
-                                        optionSelected.remove(choice);
-                                      }
-                                    });
-                                    if (choice == 'manual') {
-                                      _popupMenuTitle = 'Select Algorithm';
-                                      selectedAlgorithm = '';
-                                    }
-                                  },
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (optionSelected.contains('manual'))
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: YaruPopupMenuButton(
-                          tooltip: 'Select the Algorithm',
-                          enableFeedback: true,
-                          child: Text(
-                            _popupMenuTitle,
-                            style: TextStyle(
-                              fontSize: width < 600 ? 13 : fontSize - 8,
-                            ),
-                          ),
-                          itemBuilder: (BuildContext context) {
-                            return List.generate(algorithms.length, (index) {
-                              return PopupMenuItem<String>(
-                                value: algorithms[index],
-                                child: Text(
-                                  algorithms[index],
-                                  style: TextStyle(
-                                      fontSize:
-                                          width < 600 ? 15 : fontSize - 8),
-                                ),
-                                onTap: () =>
-                                    selectedAlgorithm = algorithms[index],
-                              );
-                            });
-                          },
-                          onSelected: (value) {
-                            setState(() {
-                              _popupMenuTitle = value;
-                            });
-                          },
-                        ),
-                      ),
-                    TextButton(
-                      onPressed: () {
-                        selectedAlgorithm = optionSelected.contains('manual')
-                            ? selectedAlgorithm
-                            : defaultAlgorithm;
-                        String t1 = controller.text;
-                        try {
-                          if (t1.isEmpty) {
-                            widget.snackbarKey.currentState?.showSnackBar(
-                              snackBar(
-                                'Dataset is empty!!',
-                                fontSize,
-                                width,
-                              ),
-                            );
-                            return;
-                          }
-                          listNumbers =
-                              t1.split(',').map((s) => s.trim()).toList();
-                          floatNumbers = listNumbers
-                              .map((s) => int.tryParse(s) ?? double.parse(s))
-                              .toList();
-                        } catch (e) {
-                          widget.snackbarKey.currentState?.showSnackBar(
-                              snackBar(e.toString(), fontSize, width));
-                          return;
-                        }
-                        if (selectedAlgorithm == '') {
-                          widget.snackbarKey.currentState?.showSnackBar(
-                              snackBar('Select an Algorithm', fontSize, width));
-                          return;
-                        }
-                        if (selectedAlgorithm == 'Insertion') {
-                          Stopwatch stopwatch = Stopwatch()..start();
-                          Sort insertionSort = Sort(floatNumbers,
-                              optionSelected.contains('reversed'));
-                          setState(() {
-                            result = insertionSort.insertionSort().toString();
-                            time = 'Time taken ${stopwatch.elapsed.toString()}';
-                          });
-                          stopwatch.stop();
-                        }
-                        if (selectedAlgorithm == 'Bubble') {
-                          Stopwatch stopwatch = Stopwatch()..start();
-                          Sort bubbleSort = Sort(floatNumbers,
-                              optionSelected.contains('reversed'));
-                          setState(() {
-                            result = bubbleSort.bubbleSort().toString();
-                            time = 'Time taken ${stopwatch.elapsed.toString()}';
-                          });
-                          stopwatch.stop();
-                        }
-                        if (selectedAlgorithm == 'Merge') {
-                          Stopwatch stopwatch = Stopwatch()..start();
-                          Sort mergeSort = Sort(floatNumbers,
-                              optionSelected.contains('reversed'));
-                          setState(() {
-                            result = mergeSort.mergeSort().toString();
-                            time = 'Time taken ${stopwatch.elapsed.toString()}';
-                          });
-                          stopwatch.stop();
-                        }
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStatePropertyAll(
-                          Theme.of(context).primaryColor,
-                        ),
-                        shape: const MaterialStatePropertyAll<
-                            RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                        ),
-                        padding: MaterialStatePropertyAll<EdgeInsetsGeometry>(
-                          EdgeInsets.only(
-                            top: 20,
-                            bottom: 20,
-                            left: width > 1000 ? width / 15 : width / 7,
-                            right: width > 1000 ? width / 15 : width / 7,
-                          ),
-                        ),
-                      ),
-                      child: Tooltip(
-                        message: 'click to sort',
-                        child: Text(
-                          'Sort',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: fontSize,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: SizedBox(
-                        height: (orientation == Orientation.landscape) &&
-                                (Platform.isAndroid || Platform.isIOS)
-                            ? height - 100
-                            : (Platform.isAndroid || Platform.isIOS) &&
-                                    (orientation == Orientation.portrait)
-                                ? height - 500
-                                : width > 800 && height > 1000
-                                    ? height - 450
-                                    : height - 350,
-                        width: width - 50,
-                        child: Stack(
-                          children: [
-                            YaruBanner(
-                              child: Column(
-                                children: [
-                                  Flexible(
-                                    child: SingleChildScrollView(
-                                      child: SelectableText(
-                                        result,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20),
-                                    child: SelectionArea(
-                                      child: SelectableText(
-                                        time,
-                                        style: TextStyle(
-                                          fontSize: fontSize,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 10, // Adjust the top position as needed
-                              right: 10, // Adjust the right position as needed
-                              child: YaruIconButton(
-                                tooltip: 'Copy the result',
-                                icon: Icon(
-                                  isSnackbar
-                                      ? YaruIcons.copy_filled
-                                      : YaruIcons.copy,
-                                  size: fontSize + 5,
-                                ),
-                                onPressed: () async {
-                                  result.isNotEmpty
-                                      ? await Clipboard.setData(ClipboardData(
-                                          text: result.toString()))
-                                      : null;
-                                  setState(() {
-                                    isSnackbar = !isSnackbar;
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(
-                                          snackBar(
-                                            result.isNotEmpty
-                                                ? 'Copied to clipboard'
-                                                : 'Nothing to copy',
-                                            fontSize,
-                                            width,
-                                          ),
-                                        )
-                                        .closed
-                                        .then((value) {
-                                      setState(() {
-                                        isSnackbar = !isSnackbar;
-                                      });
-                                    });
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: isMobile
+          ? SingleChildScrollView(
+              child: column,
+            )
+          : column,
     );
   }
 }
