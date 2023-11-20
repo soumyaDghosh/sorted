@@ -39,7 +39,7 @@ class HeaderBar extends StatelessWidget implements PreferredSizeWidget {
             //leading: leading,
             title: title,
             actions: [leading],
-            backgroundColor: Theme.of(context).canvasColor,
+            backgroundColor: Theme.of(context).cardColor,
             elevation: 0,
             shadowColor: backgroundColor,
           );
