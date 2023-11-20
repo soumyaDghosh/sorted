@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 const List<String> algorithms = [
   "Insertion",
   "Bubble",
@@ -31,3 +33,6 @@ final contributors = <String, String>{
       (githubMe),
   'Icon by Chinmay Tiwari': (githubChintu),
 };
+
+const bannerBackground = Color.fromRGBO(253, 244, 241, 1);
+const bannerBackgorundDark = Color.fromRGBO(71, 62, 59, 1);
