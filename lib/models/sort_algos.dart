@@ -1,10 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:sorted/constants.dart';
+
 class Sort {
   List<dynamic> numbers;
   bool reversed;
+  final GlobalKey<ScaffoldMessengerState> snackbarKey;
+  final double fontSize;
+  final int width;
 
-  Sort(this.numbers, this.reversed);
+  Sort(
+    this.numbers,
+    this.reversed,
+    this.snackbarKey,
+    this.fontSize,
+    this.width,
+  );
 
-  List<dynamic> bubbleSort() {
+  String bubbleSort() {
     int n = numbers.length;
 
     for (int i = 0; i < n - 1; i++) {
@@ -17,12 +29,12 @@ class Sort {
         }
       }
     }
-    return reversed ? numbers.reversed.toList() : numbers;
+    return reversed ? numbers.reversed.toList().toString() : numbers.toString();
   }
 
-  List<dynamic> mergeSort() {
+  String mergeSort() {
     _mergeSort(0, numbers.length - 1);
-    return reversed ? numbers.reversed.toList() : numbers;
+    return reversed ? numbers.reversed.toList().toString() : numbers.toString();
   }
 
   void _mergeSort(int low, int high) {
@@ -82,7 +94,7 @@ class Sort {
     }
   }
 
-  List<dynamic> insertionSort() {
+  String insertionSort() {
     int n = numbers.length;
 
     for (int i = 1; i < n; i++) {
@@ -97,6 +109,21 @@ class Sort {
       }
       numbers[j + 1] = key;
     }
-    return reversed ? numbers.reversed.toList() : numbers;
+    return reversed ? numbers.reversed.join(',') : numbers.toString();
+  }
+
+  dynamic getMethod(String algorithm) {
+    switch (algorithm) {
+      case 'Bubble':
+        return bubbleSort();
+      case 'Insertion':
+        return insertionSort();
+      case 'Merge':
+        return mergeSort();
+      case '':
+        throw ErrorDescription(errorMessages[1]);
+      default:
+        return mergeSort();
+    }
   }
 }
