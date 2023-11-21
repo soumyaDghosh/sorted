@@ -29,12 +29,12 @@ class Sort {
         }
       }
     }
-    return reversed ? numbers.reversed.toList().toString() : numbers.toString();
+    return reversed ? numbers.reversed.join(', ') : numbers.join(', ');
   }
 
   String mergeSort() {
     _mergeSort(0, numbers.length - 1);
-    return reversed ? numbers.reversed.toList().toString() : numbers.toString();
+    return reversed ? numbers.reversed.join(', ') : numbers.join(', ');
   }
 
   void _mergeSort(int low, int high) {
@@ -109,7 +109,7 @@ class Sort {
       }
       numbers[j + 1] = key;
     }
-    return reversed ? numbers.reversed.join(',') : numbers.toString();
+    return reversed ? numbers.reversed.join(', ') : numbers.join(', ');
   }
 
   dynamic getMethod(String algorithm) {
