@@ -5,6 +5,7 @@ import 'package:sorted/common/widgets/header_bar.dart';
 import 'package:sorted/common/widgets/switch_tile.dart';
 import 'package:sorted/constants.dart';
 import 'package:sorted/value_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yaru/yaru.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
@@ -97,21 +98,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   children: [
                     alignedText(headerPaddingMobile, settingsHeaders[0]),
-                    Padding(
-                      padding: EdgeInsets.only(
-                        bottom: optionSelected
-                                .contains(chipOptions.entries.elementAt(2).key)
-                            ? 0
-                            : 10,
-                      ),
-                      child: CustomSwitchTile(
-                        fontsize: fontSize,
-                        title: chipOptions.entries.elementAt(2).value.$1,
-                        subtitle: chipOptions.entries.elementAt(2).value.$2,
-                        value: optionSelected
-                            .contains(chipOptions.entries.elementAt(2).key),
-                        onChanged: (value) => changeValue(value, context, 2),
-                      ),
+                    CustomSwitchTile(
+                      fontsize: fontSize,
+                      title: chipOptions.entries.elementAt(2).value.$1,
+                      subtitle: chipOptions.entries.elementAt(2).value.$2,
+                      value: optionSelected
+                          .contains(chipOptions.entries.elementAt(2).key),
+                      onChanged: (value) => changeValue(value, context, 2),
                     ),
                     if (optionSelected
                         .contains(chipOptions.entries.elementAt(2).key))
@@ -123,6 +116,9 @@ class _SettingsPageState extends State<SettingsPage> {
                           subtitle: const Text('Select the algorithm manually'),
                         ),
                       ),
+                    const SizedBox(
+                      height: 10,
+                    )
                   ],
                 ),
               ),
@@ -149,14 +145,41 @@ class _SettingsPageState extends State<SettingsPage> {
                           });
                         },
                       ),
+                    const SizedBox(
+                      height: 10,
+                    )
                   ],
                 ),
               ),
               Dialog(
                 backgroundColor: Theme.of(context).highlightColor,
-                child: const ListTile(
-                  title: Text('About the App'),
-                  trailing: AboutSection(),
+                child: Column(
+                  children: [
+                    alignedText(headerPaddingMobile, 'About'),
+                    const ListTile(
+                      title: Text('App Info'),
+                      subtitle: Text('About the app'),
+                      trailing: AboutSection(),
+                    ),
+                    ListTile(
+                      title: const Text('Source Code'),
+                      subtitle: const Text('Show the source-code'),
+                      trailing: IconButton(
+                          onPressed: () => launchUrl(Uri.parse(githubProject)),
+                          icon: const Icon(Icons.code_rounded)),
+                    ),
+                    ListTile(
+                      title: const Text('Issues'),
+                      subtitle: const Text('Report Issues'),
+                      trailing: IconButton(
+                          onPressed: () =>
+                              launchUrl(Uri.parse('$githubProject/issues')),
+                          icon: const Icon(Icons.safety_check)),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
                 ),
               )
             ],
@@ -256,7 +279,27 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                     ],
                   )),
-            )
+            ),
+            const ListTile(
+              title: Text('App Info'),
+              subtitle: Text('About the app'),
+              trailing: AboutSection(),
+            ),
+            ListTile(
+              title: const Text('Source Code'),
+              subtitle: const Text('Show the source-code'),
+              trailing: IconButton(
+                  onPressed: () => launchUrl(Uri.parse(githubProject)),
+                  icon: const Icon(Icons.code_rounded)),
+            ),
+            ListTile(
+              title: const Text('Issues'),
+              subtitle: const Text('Report Issues'),
+              trailing: IconButton(
+                  onPressed: () =>
+                      launchUrl(Uri.parse('$githubProject/issues')),
+                  icon: const Icon(Icons.safety_check)),
+            ),
           ],
         ),
       ),
