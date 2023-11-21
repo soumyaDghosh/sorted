@@ -114,11 +114,11 @@ class Sort {
 
   dynamic getMethod(String algorithm) {
     switch (algorithm) {
-      case 'Bubble':
+      case 'bubble':
         return bubbleSort();
-      case 'Insertion':
+      case 'insertion':
         return insertionSort();
-      case 'Merge':
+      case 'merge':
         return mergeSort();
       case '':
         throw ErrorDescription(errorMessages[1]);
