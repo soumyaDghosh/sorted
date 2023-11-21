@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sorted/common/widgets/platform_icon_button.dart';
 import 'package:yaru/yaru.dart';
-import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
 class TimedCircularProgressIndicator extends StatefulWidget {
@@ -29,7 +29,7 @@ class _TimedCircularProgressIndicatorState
   void initState() {
     super.initState();
     _progress = widget.initialValue;
-    _timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       _progress += 1 / (widget.totalTime * 10);
       if (_progress >= widget.totalTime) {
         timer.cancel();
@@ -71,7 +71,7 @@ class CustomCloseSnackBar extends StatelessWidget {
           bottom: isMobile ? -5.5 : null,
           right: isMobile ? null : 1,
           left: isMobile ? -6 : null,
-          child: IconButton(
+          child: PlatformIconButton(
             onPressed: () => snackbarKey.currentState?.hideCurrentSnackBar(),
             icon: Icon(
               Icons.close,
