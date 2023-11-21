@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 const List<String> algorithms = [
-  "Insertion",
-  "Bubble",
-  "Merge",
+  "insertion",
+  "bubble",
+  "merge",
 ];
 
 const dataTypes = <String, (Type, bool)>{
@@ -11,16 +11,24 @@ const dataTypes = <String, (Type, bool)>{
   'Alphabets': (String, false),
 };
 
-const List<String> chipOptions = [
-  'reversed',
-  'manual',
-  'csv',
-];
+const Map<String, (String, String)> chipOptions = {
+  'reversed': ('Reversed', 'Reverse the result'),
+  'csv': ('CSV', 'Use CSV files'),
+  'manual': ('Manual', 'Select Manual Algorithm\nDefault is Merge'),
+};
 
 const githubProject = 'https://github.com/soumyaDghosh/sorted';
 const githubMe = 'https://github.com/soumyaDghosh';
 const githubChintu = 'https://github.com/Chintiw';
 const appIcon = 'assets/icon.png';
+const toolTips = [
+  'Select the Algorithm',
+];
+
+const settingsHeaders = [
+  'Algorithm',
+  'General',
+];
 
 final errorMessages = [
   'Dataset is empty',
@@ -36,3 +44,9 @@ final contributors = <String, String>{
 
 const bannerBackground = Color.fromRGBO(253, 244, 241, 1);
 const bannerBackgorundDark = Color.fromRGBO(71, 62, 59, 1);
+
+extension StringExtensions on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1)}";
+  }
+}
