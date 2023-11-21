@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sorted/common/widgets/about_section.dart';
 import 'package:sorted/common/widgets/header_bar.dart';
 import 'package:sorted/common/widgets/switch_tile.dart';
 import 'package:sorted/constants.dart';
@@ -96,13 +97,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   children: [
                     alignedText(headerPaddingMobile, settingsHeaders[0]),
-                    CustomSwitchTile(
-                      fontsize: fontSize,
-                      title: chipOptions.entries.elementAt(2).value.$1,
-                      subtitle: chipOptions.entries.elementAt(2).value.$2,
-                      value: optionSelected
-                          .contains(chipOptions.entries.elementAt(2).key),
-                      onChanged: (value) => changeValue(value, context, 2),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        bottom: optionSelected
+                                .contains(chipOptions.entries.elementAt(2).key)
+                            ? 0
+                            : 10,
+                      ),
+                      child: CustomSwitchTile(
+                        fontsize: fontSize,
+                        title: chipOptions.entries.elementAt(2).value.$1,
+                        subtitle: chipOptions.entries.elementAt(2).value.$2,
+                        value: optionSelected
+                            .contains(chipOptions.entries.elementAt(2).key),
+                        onChanged: (value) => changeValue(value, context, 2),
+                      ),
                     ),
                     if (optionSelected
                         .contains(chipOptions.entries.elementAt(2).key))
@@ -143,6 +152,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
+              Dialog(
+                backgroundColor: Theme.of(context).highlightColor,
+                child: const ListTile(
+                  title: Text('About the App'),
+                  trailing: AboutSection(),
+                ),
+              )
             ],
           ),
         ],
