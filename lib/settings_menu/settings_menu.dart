@@ -7,6 +7,7 @@ import 'package:sorted/constants.dart';
 import 'package:sorted/value_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yaru/yaru.dart';
+import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -223,7 +224,7 @@ class _SettingsPageState extends State<SettingsPage> {
             Padding(
               padding: const EdgeInsets.all(30),
               child: YaruSection(
-                headline: const Text(''),
+                headline: Text(settingsHeaders[0]),
                 headlinePadding: headerPadding,
                 padding: EdgeInsets.zero,
                 child: Column(
@@ -280,25 +281,35 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   )),
             ),
-            const ListTile(
-              title: Text('App Info'),
-              subtitle: Text('About the app'),
-              trailing: AboutSection(),
-            ),
-            ListTile(
-              title: const Text('Source Code'),
-              subtitle: const Text('Show the source-code'),
-              trailing: IconButton(
-                  onPressed: () => launchUrl(Uri.parse(githubProject)),
-                  icon: const Icon(Icons.code_rounded)),
-            ),
-            ListTile(
-              title: const Text('Issues'),
-              subtitle: const Text('Report Issues'),
-              trailing: IconButton(
-                  onPressed: () =>
-                      launchUrl(Uri.parse('$githubProject/issues')),
-                  icon: const Icon(Icons.safety_check)),
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: YaruSection(
+                headline: const Text('About Section'),
+                child: Column(
+                  children: [
+                    const ListTile(
+                      title: Text('App Info'),
+                      subtitle: Text('About the app'),
+                      trailing: AboutSection(),
+                    ),
+                    ListTile(
+                      title: const Text('Source Code'),
+                      subtitle: const Text('Show the source-code'),
+                      trailing: IconButton(
+                          onPressed: () => launchUrl(Uri.parse(githubProject)),
+                          icon: const Icon(YaruIcons.code)),
+                    ),
+                    ListTile(
+                      title: const Text('Issues'),
+                      subtitle: const Text('Report Issues'),
+                      trailing: IconButton(
+                          onPressed: () =>
+                              launchUrl(Uri.parse('$githubProject/issues')),
+                          icon: const Icon(YaruIcons.shield_warning)),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
