@@ -6,9 +6,10 @@ class StringListProvider extends ChangeNotifier {
   GlobalKey<ScaffoldMessengerState> snackbarKey =
       GlobalKey<ScaffoldMessengerState>();
   String selectedAlgorithm = 'Merge';
+  String options = 'options';
+  String defaultAlgo = 'defaultAlgorithm';
 
   void getSavedOptions() async {
-    print('Getting...');
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     optionsSelected = prefs.getStringList('options') ?? [];
     selectedAlgorithm = prefs.getString('defaultAlgo') ?? 'Merge';
@@ -18,21 +19,29 @@ class StringListProvider extends ChangeNotifier {
   void addOption(String string) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     optionsSelected.add(string);
-    prefs.setStringList('options', optionsSelected);
+    prefs.setStringList(options, optionsSelected);
     notifyListeners();
   }
 
   void removeOption(String string) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     optionsSelected.remove(string);
-    prefs.setStringList('options', optionsSelected);
+    prefs.setStringList(options, optionsSelected);
     notifyListeners();
   }
 
   void changedefaultAlgo(String string) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     selectedAlgorithm = string;
-    prefs.setString('defaultAlgorithm', selectedAlgorithm);
+    prefs.setString(defaultAlgo, selectedAlgorithm);
     notifyListeners();
+  }
+
+  void reset() async {
+    selectedAlgorithm = 'merge';
+    optionsSelected = [];
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove(options);
+    prefs.remove(defaultAlgo);
   }
 }

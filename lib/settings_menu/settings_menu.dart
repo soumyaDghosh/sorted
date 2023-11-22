@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
         context.watch<StringListProvider>().optionsSelected;
     String selectedAlgorithm =
         context.watch<StringListProvider>().selectedAlgorithm;
-    const headerPadding = EdgeInsets.only(left: 30, top: 30, bottom: 10);
+    const headerPadding = EdgeInsets.only(left: 20, top: 30, bottom: 10);
     const headerPaddingMobile = EdgeInsets.only(left: 15, bottom: 10, top: 30);
 
     final androidpopupMenuButton = PopupMenuButton(
@@ -146,6 +146,14 @@ class _SettingsPageState extends State<SettingsPage> {
                           });
                         },
                       ),
+                    ListTile(
+                      title: const Text('Reset'),
+                      subtitle: const Text('Reset to default choices'),
+                      trailing: IconButton(
+                          onPressed: () =>
+                              context.read<StringListProvider>().reset(),
+                          icon: const Icon(Icons.restore)),
+                    ),
                     const SizedBox(
                       height: 10,
                     )
@@ -192,7 +200,7 @@ class _SettingsPageState extends State<SettingsPage> {
       tooltip: 'Select the Algorithm',
       enableFeedback: true,
       child: Text(
-        selectedAlgorithm,
+        selectedAlgorithm.capitalize(),
         style: TextStyle(
           fontSize: width < 600 ? 13 : fontSize - 8,
         ),
@@ -202,7 +210,7 @@ class _SettingsPageState extends State<SettingsPage> {
           return PopupMenuItem<String>(
             value: algorithms[index],
             child: Text(
-              algorithms[index],
+              algorithms[index].capitalize(),
               style: TextStyle(fontSize: width < 600 ? 15 : fontSize - 8),
             ),
             onTap: () => selectedAlgorithm = algorithms[index],
@@ -264,27 +272,39 @@ class _SettingsPageState extends State<SettingsPage> {
             Padding(
               padding: const EdgeInsets.all(30),
               child: YaruSection(
-                  padding: EdgeInsets.zero,
-                  headline: Text(settingsHeaders[1]),
-                  headlinePadding: headerPadding,
-                  child: Column(
-                    children: [
-                      for (int i = 0; i < chipOptions.length - 1; i++)
-                        CustomSwitchTile(
-                          fontsize: fontSize,
-                          title: chipOptions.entries.elementAt(i).value.$1,
-                          subtitle: chipOptions.entries.elementAt(i).value.$2,
-                          value: optionSelected
-                              .contains(chipOptions.entries.elementAt(i).key),
-                          onChanged: (value) => changeValue(value, context, i),
-                        ),
-                    ],
-                  )),
+                padding: EdgeInsets.zero,
+                headline: Text(settingsHeaders[1]),
+                headlinePadding: headerPadding,
+                child: Column(
+                  children: [
+                    for (int i = 0; i < chipOptions.length - 1; i++)
+                      CustomSwitchTile(
+                        fontsize: fontSize,
+                        title: chipOptions.entries.elementAt(i).value.$1,
+                        subtitle: chipOptions.entries.elementAt(i).value.$2,
+                        value: optionSelected
+                            .contains(chipOptions.entries.elementAt(i).key),
+                        onChanged: (value) => changeValue(value, context, i),
+                      ),
+                    ListTile(
+                      title: const Text('Reset'),
+                      subtitle: const Text('Reset to default choices'),
+                      trailing: IconButton(
+                        onPressed: () => setState(() {
+                          context.read<StringListProvider>().reset();
+                        }),
+                        icon: const Icon(YaruIcons.refresh),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(30),
               child: YaruSection(
                 headline: const Text('About Section'),
+                headlinePadding: headerPadding,
                 child: Column(
                   children: [
                     const ListTile(
