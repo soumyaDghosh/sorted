@@ -3,7 +3,6 @@ import 'package:sorted/common/widgets/platform_icon_button.dart';
 import 'package:sorted/route.dart' as route;
 import 'package:yaru/yaru.dart';
 import 'package:yaru_icons/yaru_icons.dart';
-import 'package:yaru_widgets/yaru_widgets.dart';
 
 class ActionMenu extends StatelessWidget {
   const ActionMenu({super.key});
