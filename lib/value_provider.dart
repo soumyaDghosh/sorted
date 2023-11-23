@@ -11,8 +11,8 @@ class StringListProvider extends ChangeNotifier {
 
   void getSavedOptions() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    optionsSelected = prefs.getStringList('options') ?? [];
-    selectedAlgorithm = prefs.getString('defaultAlgo') ?? 'Merge';
+    optionsSelected = prefs.getStringList(options) ?? [];
+    selectedAlgorithm = prefs.getString(defaultAlgo) ?? 'Merge';
     notifyListeners();
   }
 
