@@ -101,14 +101,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     alignedText(headerPaddingMobile, settingsHeaders[0]),
                     CustomSwitchTile(
                       fontsize: fontSize,
-                      title: chipOptions.entries.elementAt(2).value.$1,
-                      subtitle: chipOptions.entries.elementAt(2).value.$2,
+                      title: chipOptions.entries.elementAt(1).value.$1,
+                      subtitle: chipOptions.entries.elementAt(1).value.$2,
                       value: optionSelected
-                          .contains(chipOptions.entries.elementAt(2).key),
-                      onChanged: (value) => changeValue(value, context, 2),
+                          .contains(chipOptions.entries.elementAt(1).key),
+                      onChanged: (value) => changeValue(value, context, 1),
                     ),
                     if (optionSelected
-                        .contains(chipOptions.entries.elementAt(2).key))
+                        .contains(chipOptions.entries.elementAt(1).key))
                       Padding(
                         padding: const EdgeInsets.only(bottom: 10),
                         child: ListTile(
@@ -222,9 +222,9 @@ class _SettingsPageState extends State<SettingsPage> {
       },
     );
     final desktopView = Scaffold(
-      appBar: HeaderBar(
-        leading: const YaruBackButton(),
-        title: Text(settingsHeaders[0]),
+      appBar: const HeaderBar(
+        leading: YaruBackButton(),
+        title: Text('Settings'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -241,14 +241,14 @@ class _SettingsPageState extends State<SettingsPage> {
                       children: [
                         CustomSwitchTile(
                           fontsize: fontSize,
-                          title: chipOptions.entries.elementAt(2).value.$1,
-                          subtitle: chipOptions.entries.elementAt(2).value.$2,
+                          title: chipOptions.entries.elementAt(1).value.$1,
+                          subtitle: chipOptions.entries.elementAt(1).value.$2,
                           value: optionSelected
-                              .contains(chipOptions.entries.elementAt(2).key),
-                          onChanged: (value) => changeValue(value, context, 2),
+                              .contains(chipOptions.entries.elementAt(1).key),
+                          onChanged: (value) => changeValue(value, context, 1),
                         ),
                         if (optionSelected
-                            .contains(chipOptions.entries.elementAt(2).key))
+                            .contains(chipOptions.entries.elementAt(1).key))
                           ListTile(
                             trailing: yaruPopupMenuButton,
                             title: const Text('Select Algorithm'),
