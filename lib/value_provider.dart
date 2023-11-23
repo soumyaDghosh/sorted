@@ -5,14 +5,14 @@ class StringListProvider extends ChangeNotifier {
   List<String> optionsSelected = [];
   GlobalKey<ScaffoldMessengerState> snackbarKey =
       GlobalKey<ScaffoldMessengerState>();
-  String selectedAlgorithm = 'Merge';
-  String options = 'options';
-  String defaultAlgo = 'defaultAlgorithm';
+  String selectedAlgorithm = 'merge';
+  static const options = 'options';
+  static const defaultAlgo = 'defaultAlgorithm';
 
   void getSavedOptions() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     optionsSelected = prefs.getStringList(options) ?? [];
-    selectedAlgorithm = prefs.getString(defaultAlgo) ?? 'Merge';
+    selectedAlgorithm = prefs.getString(defaultAlgo) ?? 'merge';
     notifyListeners();
   }
 

@@ -9,7 +9,7 @@ import 'package:sorted/homepage/action_menu.dart';
 import 'package:sorted/homepage/banner.dart';
 import 'package:sorted/homepage/filled_button.dart';
 import 'package:sorted/homepage/text_field_bar.dart';
-import 'package:sorted/sort/sort_algos.dart';
+import 'package:sorted/calculate/sort_algos.dart';
 import 'package:sorted/value_provider.dart';
 import 'package:yaru/yaru.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
@@ -25,8 +25,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController controller = TextEditingController();
   final FocusNode f1 = FocusNode();
-  String selectedAlgorithm = '';
-  String defaultAlgorithm = 'Merge';
   String result = '';
   String time = '';
   List<dynamic> floatNumbers = [];
@@ -55,8 +53,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final snackbarKey = context.watch<StringListProvider>().snackbarKey;
-    List<String> optionSelected =
-        context.watch<StringListProvider>().optionsSelected;
+    final List<String> optionSelected =
+        context.read<StringListProvider>().optionsSelected;
+    final String selectedAlgorithm =
+        context.read<StringListProvider>().selectedAlgorithm;
     final bool lightTheme = Theme.of(context).brightness == Brightness.light;
     final width = MediaQuery.of(context).size.width.toInt();
     final height = MediaQuery.of(context).size.height.toInt();
@@ -78,15 +78,10 @@ class _HomePageState extends State<HomePage> {
         time = '';
         floatNumbers = [];
         time = '';
-        selectedAlgorithm = '';
       });
     }
 
     void sort() {
-      selectedAlgorithm =
-          optionSelected.contains(chipOptions.entries.elementAt(1).key)
-              ? selectedAlgorithm
-              : defaultAlgorithm;
       String t1 = controller.text.trim();
       try {
         if (t1.isEmpty) {
