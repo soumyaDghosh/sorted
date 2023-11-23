@@ -88,7 +88,7 @@ class CustomaboutDialog extends StatelessWidget {
                       SizedBox(
                         width: width - 300,
                       ),
-                      YaruIconButton(icon: Icon(SimpleIcons.github))
+                      const YaruIconButton(icon: Icon(SimpleIcons.github))
                     ],
                   ),
                 ),
