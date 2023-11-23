@@ -34,6 +34,8 @@ jobs:
 
   build-android:
     runs-on: ubuntu-22.04
+    outputs:
+      path: build/app/outputs/apk/release/app-release.apk
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -41,7 +43,7 @@ jobs:
           channel: 'stable'
           flutter-version: ${{env.FLUTTER_VERSION}}
       - run: sudo apt update
-      - run: sudo apt install -y clang cmake curl libgtk-3-dev ninja-build pkg-config unzip libunwind-dev libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev libmpv-dev
+      - run: sudo apt install -y clang cmake curl libgtk-3-dev ninja-build pkg-config unzip libunwind-dev
       - run: flutter pub get
       - run: flutter build apk --release
   upload-apk:
@@ -51,6 +53,6 @@ jobs:
     steps:
       - uses: actions/upload-artifact@v3
         with:
-          name: flutter-android-build
-          path: build/app/outputs/apk/release/app-release.apk
+          name: sorted-android
+          path: ${{ needs.build-android.outputs.output-path }}
 
